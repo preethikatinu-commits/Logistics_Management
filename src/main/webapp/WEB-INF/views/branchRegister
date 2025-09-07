@@ -1,0 +1,48 @@
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<html>
+<head>
+    <title>Register Branch</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        label { display:block; margin-top:10px; font-weight:bold; }
+        input, select { width: 300px; padding:6px; margin-top:4px; }
+        .btn { margin-top:15px; padding:8px 14px; background:#2b6cff; color:#fff; border:none; border-radius:4px; cursor:pointer; }
+    </style>
+</head>
+<body>
+    <h2>Register New Branch</h2>
+
+    <form:form method="post" modelAttribute="branch" action="${pageContext.request.contextPath}/branches/register">
+        <label>Branch Name</label>
+        <form:input path="name"/>
+
+        <label>Address</label>
+        <form:input path="address"/>
+
+        <label>City</label>
+        <form:input path="city"/>
+
+        <label>State</label>
+        <form:input path="state"/>
+
+        <label>Pin Code</label>
+        <form:input path="pinCode"/>
+
+        <label>Branch Type</label>
+        <form:select path="type">
+            <form:options items="${types}"/>
+        </form:select>
+
+        <label>Client</label>
+        <form:select path="clientId">
+            <form:options items="${clients}" itemValue="id" itemLabel="name"/>
+        </form:select>
+
+        <br/>
+        <button type="submit" class="btn">Save Branch</button>
+        <a href="${pageContext.request.contextPath}/branches" style="margin-left:15px;">Back</a>
+    </form:form>
+</body>
+</html>
