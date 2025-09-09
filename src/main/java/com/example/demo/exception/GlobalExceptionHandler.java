@@ -1,4 +1,4 @@
-package com.example.demo.exceptions;
+package com.example.demo.exception;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;

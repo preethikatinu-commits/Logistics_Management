@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.VehicleDTO;
-import com.example.demo.exceptions.VehicleNotFoundException;
+import com.example.demo.exception.VehicleNotFoundException;
 import com.example.demo.mapper.VehicleMapper;
 import com.example.demo.model.Vehicle;
 import com.example.demo.repository.VehicleRepository;
