@@ -1,4 +1,4 @@
-package com.example.demo.controller.admin;
+package com.example.demo.controller;
 
 import java.util.List;
 import java.util.stream.Collectors;
