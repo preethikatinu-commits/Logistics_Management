@@ -1,74 +1,66 @@
 package com.example.demo.securityconfig;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-
-import com.example.demo.service.CustomUserDetailsService;
-
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.UserDetailsManager;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
+import com.example.demo.service.CustomUserDetailsService;
 
 @Configuration
 
 public class SecurityConfig {
+	 private final CustomUserDetailsService customUserDetailsService;
 
+	    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+	        this.customUserDetailsService = customUserDetailsService;
+	    }
 
-    private final CustomUserDetailsService customUserDetailsService;
+	    @Bean
+	    public PasswordEncoder passwordEncoder() {
+	        return new BCryptPasswordEncoder();
+	    }
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
-        this.customUserDetailsService = customUserDetailsService;
-    }
+	    @Bean
+	    public UserDetailsService userDetailsService() {
+	        return customUserDetailsService;
+	    }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	    @Bean
+	    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	        // Keep CSRF enabled (we add CSRF tokens in JSP forms)
+	        http.csrf().and();
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        // Use your custom service that loads user and roles from the DB
-        return customUserDetailsService;
-    }
+	        // Use explicit AntPathRequestMatcher instances to avoid the "ambiguous matcher" error
+	        http.authorizeHttpRequests()
+	            .requestMatchers(new AntPathRequestMatcher("/api/admin/**")).hasRole("ADMIN")
+	            .requestMatchers(new AntPathRequestMatcher("/staff/**")).hasRole("STAFF")
+	            .requestMatchers(new AntPathRequestMatcher("/client/**")).hasRole("CLIENT")
+	            .requestMatchers(
+	                new AntPathRequestMatcher("/login"),
+	                new AntPathRequestMatcher("/perform_login"),
+	                new AntPathRequestMatcher("/css/**"),
+	                new AntPathRequestMatcher("/js/**"),
+	                new AntPathRequestMatcher("/images/**")
+	            ).permitAll()
+	            .anyRequest().authenticated();
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(new AntPathRequestMatcher("/api/admin/**")).hasRole("ADMIN")
-                .requestMatchers(new AntPathRequestMatcher("/staff/**")).hasRole("STAFF")
-                .requestMatchers(new AntPathRequestMatcher("/client/**")).hasRole("CLIENT")
-                .requestMatchers(new AntPathRequestMatcher("/login"),
-                                 new AntPathRequestMatcher("/css/**"),
-                                 new AntPathRequestMatcher("/js/**"))
-                                 .permitAll()
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/login")
-                .defaultSuccessUrl("/dashboard", true)
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .permitAll()
-            );
+	        http.formLogin(form -> form
+	                .loginPage("/login")
+	                .loginProcessingUrl("/perform_login")
+	                .defaultSuccessUrl("/dashboard", true)
+	                .permitAll()
+	        );
 
-        return http.build();
-    }
+	        http.logout(logout -> logout
+	                .logoutUrl("/logout")
+	                .logoutSuccessUrl("/login?logout")
+	                .permitAll()
+	        );
 
-	}
-	
-
-	
-
-
+	        return http.build();
+	    }
+}

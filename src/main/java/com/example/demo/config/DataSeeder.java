@@ -20,8 +20,7 @@ import java.util.Set;
 @Configuration
 public class DataSeeder {
 
-
-    private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
+	private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
 
     @Bean
     public CommandLineRunner seed(RoleRepository roleRepository,
@@ -29,9 +28,9 @@ public class DataSeeder {
                                   ClientRepository clientRepository,
                                   PasswordEncoder passwordEncoder) {
         return args -> {
-            log.info("➡️  Running DataSeeder: ensuring roles and default users exist...");
+            log.info("➡️ Running DataSeeder: ensuring roles and default users exist...");
 
-            // 1) Ensure roles exist
+            // 1. Ensure roles exist
             Role rAdmin = roleRepository.findByName("ROLE_ADMIN")
                     .orElseGet(() -> roleRepository.save(new Role("ROLE_ADMIN")));
             Role rStaff = roleRepository.findByName("ROLE_STAFF")
@@ -44,9 +43,9 @@ public class DataSeeder {
             log.info(" - Roles present: {}, {}, {}, {}",
                     rAdmin.getName(), rStaff.getName(), rEmp.getName(), rClient.getName());
 
-            // 2) Create default admin user if missing
+            // 2. Create default admin user if missing
             final String adminUsername = "admin@demo.com";
-            final String adminRawPassword = "Admin@123"; // change this immediately after first login
+            final String adminRawPassword = "Admin@123"; // CHANGE after first login
             if (!userRepository.existsByUsername(adminUsername)) {
                 User admin = new User();
                 admin.setUsername(adminUsername);
@@ -60,47 +59,7 @@ public class DataSeeder {
                 existingAdmin.ifPresent(u -> log.info("ℹ️ Admin user already exists: {} (id={})", u.getUsername(), u.getId()));
             }
 
-            // --- OPTIONAL: create a sample staff user (uncomment if needed) ---
-            /*
-            final String staffUsername = "staff@demo.com";
-            if (!userRepository.existsByUsername(staffUsername)) {
-                User staff = new User();
-                staff.setUsername(staffUsername);
-                staff.setFullName("Sample Staff");
-                staff.setPassword(passwordEncoder.encode("Staff@123"));
-                staff.setRoles(Set.of(rStaff));
-                userRepository.save(staff);
-                log.info("✅ Created sample staff user: {} / {}", staffUsername, "Staff@123");
-            }
-            */
-
-            // --- OPTIONAL: create a sample client entry and link to a client-user ---
-            /*
-            final String clientEmail = "client@acme.com";
-            if (!clientRepository.findByEmail(clientEmail).isPresent()) {
-                Client client = new Client();
-                client.setName("ACME Pvt Ltd");
-                client.setEmail(clientEmail);
-                client.setPhone("9999999999");
-                clientRepository.save(client);
-                log.info("✅ Created sample client: {} (id={})", client.getName(), client.getId());
-
-                // create user for that client
-                final String clientUser = "client.user@acme.com";
-                if (!userRepository.existsByUsername(clientUser)) {
-                    User cu = new User();
-                    cu.setUsername(clientUser);
-                    cu.setFullName("ACME Contact");
-                    cu.setPassword(passwordEncoder.encode("Client@123"));
-                    cu.setClient(client); // link client -> user
-                    cu.setRoles(Set.of(rClient));
-                    userRepository.save(cu);
-                    log.info("✅ Created client-user: {} / {}", clientUser, "Client@123");
-                }
-            }
-            */
-
-            log.info("➡️  DataSeeder finished.");
+            log.info("➡️ DataSeeder finished.");
         };
     }
 }
