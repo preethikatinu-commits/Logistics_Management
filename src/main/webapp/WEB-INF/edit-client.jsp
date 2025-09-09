@@ -14,7 +14,8 @@
     .btn{padding:8px 14px;border-radius:4px;background:#2b6cff;color:#fff;border:none;cursor:pointer}
     .msg{padding:8px;margin-bottom:10px;border-radius:4px}
     .success{background:#e6ffed;border:1px solid #c5f0d0}
-    .error{background:#fff0f0;border:1px solid #f0c5c5}
+    .msg-error{background:#fff0f0;border:1px solid #f0c5c5}
+    .form-error { color:#b00020; font-size:0.9em; margin-top:4px; } /* renamed */
   </style>
 </head>
 <body>
@@ -24,26 +25,26 @@
     <div class="msg success">${message}</div>
   </c:if>
   <c:if test="${not empty error}">
-    <div class="msg error">${error}</div>
+    <div class="msg msg-error">${error}</div>
   </c:if>
 
   <form:form method="post" modelAttribute="client" action="${pageContext.request.contextPath}/clients/edit/${client.id}">
     <div class="form-row">
       <label for="name">Name</label>
       <form:input path="name" id="name" />
-      <form:errors path="name" cssClass="error"/>
+      <form:errors path="name" cssClass="form-error"/>
     </div>
 
     <div class="form-row">
       <label for="phone">Phone</label>
       <form:input path="phone" id="phone" />
-      <form:errors path="phone" cssClass="error"/>
+      <form:errors path="phone" cssClass="form-error"/>
     </div>
 
     <div class="form-row">
       <label for="email">Email</label>
       <form:input path="email" id="email" />
-      <form:errors path="email" cssClass="error"/>
+      <form:errors path="email" cssClass="form-error"/>
     </div>
 
     <div class="form-row">

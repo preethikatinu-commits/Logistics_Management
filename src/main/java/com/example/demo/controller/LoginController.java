@@ -13,9 +13,6 @@ public class LoginController {
 	        return "login"; // login.jsp
 	    }
 
-	 @GetMapping("/")
-	    public String root() {
-		 return "login";// root -> clients
-	    }
+	    
 	}
 
